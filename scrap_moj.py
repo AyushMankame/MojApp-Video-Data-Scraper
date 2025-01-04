@@ -4,7 +4,6 @@ import time
 import random
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TensorFlow warnings
-
 import csv
 import requests
 import whisper
@@ -20,7 +19,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
 from googletrans import Translator
 import streamlit as st
-
 import re
 from textblob import TextBlob
 import time
@@ -256,9 +254,6 @@ def refresh_and_extract(driver: webdriver.Chrome, file_path: str, refresh_count:
         except Exception as e:
             logger.error(f"Error processing Video {i+1}: {e}")
 
-
-
-# Preprocessing functions
 def convert_counts(count):
     count = str(count).lower()
     if 'k' in count:
@@ -268,12 +263,10 @@ def convert_counts(count):
     else:
         return int(count)  # For numbers without suffix
 
-# Sentiment analysis function
 def analyze_sentiment(text):
     blob = TextBlob(text)
     return blob.sentiment.polarity  # Range: -1 (negative) to +1 (positive)
 
-# Function for sentiment categorization
 def categorize_sentiment(score):
     if score > 0.1:
         return 'Positive'
@@ -282,7 +275,6 @@ def categorize_sentiment(score):
     else:
         return 'Neutral'
 
-# Function to preprocess text
 def preprocess_text(text):
     if isinstance(text, str):
         text = re.sub(r"#", " ", text)  # Remove hashtags
@@ -293,15 +285,13 @@ def preprocess_text(text):
         return []
 
 model = SentenceTransformer('all-MiniLM-L6-v2')
-# Function to generate embeddings
 def generate_embeddings(text):
     if text:  # If there are text
         return model.encode(" ".join(text))
     else:  # Return None for empty lists
         return None
 
-# Function for preprocessing
-def preprocess_data(file_path):
+def preprocess_data(file_path, refresh_count):
     df = pd.read_csv(file_path)
 
     # Preprocess Likes and Shares
@@ -327,7 +317,12 @@ def preprocess_data(file_path):
     # Perform KMeans clustering
     valid_embeddings = df["Combined_Embeddings"].dropna().tolist()
     embeddings = np.vstack(valid_embeddings)
-    kmeans = KMeans(n_clusters=3, random_state=42)
+    
+    if(refresh_count < 9):
+        n = refresh_count
+    else:
+        n = 9
+    kmeans = KMeans(n_clusters=n, random_state=42)
     empty_rows = df["Combined_Embeddings"].isna()
     df.loc[~empty_rows, "Category"] = kmeans.fit_predict(embeddings)
 
@@ -348,7 +343,6 @@ def preprocess_data(file_path):
     
     return df, processed_file_path
 
-# Streamlit UI integration
 def main():
     st.title("Moj Video Scraper with Preprocessing")
 
@@ -372,7 +366,7 @@ def main():
                 
                 if preprocess_choice == "Yes":
                     # Perform preprocessing
-                    df, processed_file_path = preprocess_data(file_name)
+                    df, processed_file_path = preprocess_data(file_name, refresh_count)
                     st.success(f"Preprocessing complete! Data saved to {processed_file_path}")
                     st.write(df.head())  # Display a preview of the processed data
                 else:
@@ -388,44 +382,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-# def main():
-#     """
-#     Main function to run the Moj video scraper with Streamlit integration.
-#     """
-#     st.title("Moj Video Scraper")
-#     st.write("Enter the number of videos to extract and a filename for storing the data.")
-
-#     # Streamlit inputs for user parameters
-#     refresh_count = st.number_input("Enter the number of videos to extract:", min_value=1, step=1)
-#     file_name = st.text_input("Enter the output CSV file name (e.g., moj_data.csv):")
-
-#     if st.button("Start Extraction"):
-#         if file_name:
-#             driver = None
-#             try:
-#                 # Setup WebDriver
-#                 driver = setup_webdriver()
-
-#                 # Navigate to Moj URL
-#                 driver.get(MOJ_URL)
-#                 time.sleep(2)  # Initial page load wait
-
-#                 # Extract video data
-#                 st.write(f"Extracting {refresh_count} videos...")
-#                 refresh_and_extract(driver, file_name, refresh_count=refresh_count)
-
-#                 st.success(f"Data extraction completed! Saved to {file_name}")
-#             except Exception as e:
-#                 st.error(f"An error occurred: {e}")
-#             finally:
-#                 if driver:
-#                     driver.quit()
-#         else:
-#             st.error("Please enter a valid file name.")
-
-# if __name__ == "__main__":
-#     main()
-
