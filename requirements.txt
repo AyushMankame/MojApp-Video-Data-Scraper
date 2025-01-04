@@ -1,0 +1,6 @@
+selenium
+openai-whisper
+googletrans==4.0.0-rc1
+streamlit
+torch
+requests
