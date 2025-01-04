@@ -76,7 +76,7 @@ pip install selenium requests googletrans==4.0.0-rc1 torch streamlit openai-whis
 ### Command-Line Execution
 Alternatively, you can run the script directly from the command line for batch processing:
 ```bash
-python scrap_CAI.py
+python scrap_moj.py
 ```
 
 ---
@@ -85,7 +85,7 @@ python scrap_CAI.py
 
 ```plaintext
 .
-├── scrap_CAI.py          # Main scraping script with Streamlit integration
+├── scrap_moj.py          # Main scraping script with Streamlit integration
 ├── requirements.txt      # Required Python libraries
 ├── moj_data_translated.csv # Sample output CSV file
 ├── README.md             # Project documentation
@@ -148,16 +148,3 @@ Writes the extracted data to a CSV file after processing each video.
 
 3. **Scalability**:
    - Parallelize the scraping process for faster data collection.
-
----
-
-## License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
----
-
-## Contact
-For questions or feedback, please contact:
-- **Name**: [Your Name]
-- **Email**: [Your Email]
-- **GitHub**: [Your GitHub Profile]
