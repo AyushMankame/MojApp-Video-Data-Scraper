@@ -66,7 +66,7 @@ pip install selenium requests googletrans==4.0.0-rc1 torch streamlit openai-whis
 
 ### Streamlit Interface
 1. Clone the repository and navigate to the project directory.
-2. Run the Streamlit app:
+2. Run the Streamlit app: (Enter the number of videos GREATER THAN 9 for greater accuracy, but time consuming)
    ```bash
    streamlit run app.py
    ```
